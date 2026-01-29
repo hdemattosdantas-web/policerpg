@@ -65,3 +65,6 @@ export function VoiceRadio({ mesa }) {
     </div>
   )
 }
+
+
+export default VoiceRadio

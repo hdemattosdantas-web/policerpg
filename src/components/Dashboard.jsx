@@ -217,3 +217,6 @@ export function Dashboard() {
     </div>
   )
 }
+
+
+export { formatMoneyBRL }

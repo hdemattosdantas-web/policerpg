@@ -97,3 +97,8 @@ export function tocarSomRadio() {
     // Silenciosamente ignora erros
   }
 }
+
+
+// Alias para compatibilidade com imports existentes
+export { enviarMensagem as enviarMensagemUsuario }
+export { subscribeChatMesa as subscribeChat }
