@@ -19,7 +19,7 @@ const missing = Object.entries(firebaseConfig)
 
 if (missing.length) {
   throw new Error(
-    Firebase n„o configurado. Preencha seu .env. Faltando: ,
+    Firebase n√£o configurado. Preencha seu .env. Faltando: ,
   )
 }
 
