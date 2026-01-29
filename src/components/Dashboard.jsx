@@ -33,7 +33,7 @@ export function Dashboard() {
   if (!firebaseUser || !userDoc) {
     return (
       <div className='container'>
-        <div className='panel'>Sem sessão.</div>
+        <div className='panel'>Sem sessao.</div>
       </div>
     )
   }
@@ -47,7 +47,7 @@ export function Dashboard() {
               {userDoc.nome_policial || 'Policial'}
             </div>
             <div className='header__sub'>
-              Status: <Badge>{userDoc.status || 'Em Serviço'}</Badge>
+              Status: Em Servico
             </div>
           </div>
           <div className='header__right'>
@@ -57,7 +57,6 @@ export function Dashboard() {
           </div>
         </header>
 
-        {/* Abas de Navegação */}
         <div className='dashboard__abas'>
           <button
             className={dashboard__aba }
@@ -67,7 +66,6 @@ export function Dashboard() {
           </button>
         </div>
 
-        {/* Conteúdo das Abas */}
         {abaAtiva === 'rpg' && (
           <section className='section'>
             <RPGNarrativa />
