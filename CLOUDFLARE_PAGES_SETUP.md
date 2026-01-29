@@ -26,15 +26,20 @@ VITE_FIREBASE_APP_ID=1:808784317915:web:aa927f53781ddd18486bfe
 VITE_FIREBASE_MEASUREMENT_ID=G-D10VM0SBSE
 `
 
-### Passo 3: Configurações de Build
+### Passo 3: Configurações de Build (CORRIGIDO)
 Em 'Settings'  'Build & deployments':
 
-- **Framework preset**: 'Vite'
+- **Framework preset**: 'None' (não tem Vite)
 - **Build command**: 'npm run build'
 - **Build output directory**: 'dist'
 - **Root directory**: '/'
 
-### Passo 4: Deploy
+### Passo 4: Node.js Version (IMPORTANTE)
+Em 'Settings'  'Build & deployments'  'Compatibility':
+- **Node.js version**: '20' ou superior
+- **Node compatibility**: Marque esta opção
+
+### Passo 5: Deploy
 1. Faça push das mudanças:
    `ash
    git add .
@@ -53,16 +58,18 @@ Após o deploy, verifique:
 
 ##  Importante
 
-- **NÃO** use wrangler.toml para Pages
+- **Framework preset**: 'None' (Cloudflare não tem preset Vite)
 - **SIM** use _redirects para SPA routing
 - **SEMPRE** configure variáveis no painel do Pages
 - **VERIFIQUE** se todas variáveis começam com 'VITE_'
+- **Node.js 20+** necessário para Vite moderno
 
 ##  Se Ainda Der Erro
 
-1. **Limpe o cache**: Settings  Build & deployments  Clear cache and retry
-2. **Verifique logs**: Build logs para erros específicos
-3. **Re-deploy**: Force novo deploy com novo commit
+1. **Verifique Node version**: Deve ser 20+
+2. **Limpe o cache**: Settings  Build & deployments  Clear cache and retry
+3. **Verifique logs**: Build logs para erros específicos
+4. **Re-deploy**: Force novo deploy com novo commit
 
 ##  Teste Final
 
@@ -74,4 +81,4 @@ Acesse a URL do Cloudflare Pages e:
 
 ---
 
-**Status**: Configuração otimizada para Cloudflare Pages! 
+**Status**: Configuração corrigida para Cloudflare Pages sem preset Vite! 
