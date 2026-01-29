@@ -1,7 +1,7 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth'
-import { auth } from '../firebase'
-import { ensureUserDoc, subscribeUserDoc } from '../services/users'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth"
+import { auth } from "../firebase"
+import { ensureUserDoc, subscribeUserDoc } from "../services/users"
 
 const AuthContext = createContext(null)
 
@@ -13,13 +13,23 @@ export function AuthProvider({ children }) {
 
   const signInWithGoogle = useCallback(async () => {
     setError(null)
-    const provider = new GoogleAuthProvider()
-    await signInWithPopup(auth, provider)
+    try {
+      const provider = new GoogleAuthProvider()
+      await signInWithPopup(auth, provider)
+    } catch (e) {
+      setError(e)
+      throw e
+    }
   }, [])
 
   const logout = useCallback(async () => {
     setError(null)
-    await signOut(auth)
+    try {
+      await signOut(auth)
+    } catch (e) {
+      setError(e)
+      throw e
+    }
   }, [])
 
   useEffect(() => {
@@ -41,8 +51,26 @@ export function AuthProvider({ children }) {
         }
 
         setFirebaseUser(u)
-        await ensureUserDoc({ uid: u.uid, nome_policial: u.displayName })
-
+        
+        // Retry logic for user document
+        let retryCount = 0
+        const maxRetries = 3
+        
+        const tryEnsureUserDoc = async () => {
+          try {
+            await ensureUserDoc({ uid: u.uid, nome_policial: u.displayName })
+          } catch (e) {
+            if (retryCount < maxRetries && e.message.includes("offline")) {
+              retryCount++
+              await new Promise(resolve => setTimeout(resolve, 1000))
+              return tryEnsureUserDoc()
+            }
+            throw e
+          }
+        }
+        
+        await tryEnsureUserDoc()
+        
         if (unsubUserDoc) {
           unsubUserDoc()
           unsubUserDoc = null
@@ -55,12 +83,22 @@ export function AuthProvider({ children }) {
             setLoading(false)
           },
           (err) => {
-            setError(err)
+            console.error("AuthContext subscription error:", err)
+            if (err.message.includes("offline")) {
+              setError(new Error("Conexão instável com o Firebase. Tente novamente."))
+            } else {
+              setError(err)
+            }
             setLoading(false)
           },
         )
       } catch (e) {
-        setError(e)
+        console.error("AuthContext error:", e)
+        if (e.message.includes("offline")) {
+          setError(new Error("Sem conexão com o servidor. Verifique sua internet e tente novamente."))
+        } else {
+          setError(e)
+        }
         setLoading(false)
       }
     })
@@ -91,6 +129,6 @@ export function AuthProvider({ children }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth deve ser usado dentro de AuthProvider')
+  if (!ctx) throw new Error("useAuth deve ser usado dentro de AuthProvider")
   return ctx
 }
